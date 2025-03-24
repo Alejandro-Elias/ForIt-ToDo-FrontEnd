@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Swal from "sweetalert2";
 
 export default function Home() {
   const [isActive, setIsActive] = useState(false);
@@ -121,10 +120,13 @@ export default function Home() {
   };  
 
   const handleCheck = async (id) => {
+
     const apiUrlMod = `${apiURL}/${id}`;
     const taskIndex = todo.findIndex(tarea => tarea.id === id);
 
     const newTodo = {      
+      title: todo[taskIndex].title,
+      description: todo[taskIndex].description,
       completed: !todo[taskIndex].completed,
     };
 

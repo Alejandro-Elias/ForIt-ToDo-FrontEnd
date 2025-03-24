@@ -5,12 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { Formik, Form, Field, ErrorMessage } from "formik"
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
 export default function Page() {
-
-  const [inputTitle, setInputTitle] = useState("");
-  const [inputDescription, setInputDescription] = useState("");
+  const [error, setError] = useState({});
   const [control, setControl] = useState(true);
   const [dark, setDark] = useState("");
 
@@ -28,13 +26,11 @@ export default function Page() {
   };
 
   const validationSchema = Yup.object().shape({
-    title:
-    Yup.string().required("Debe ingresar un titulo"),
-    description:
-    Yup.string().required("Debe ingresar una descripcion")
-  })
+    title: Yup.string().required("Debe ingresar un titulo"),
+    description: Yup.string().required("Debe ingresar una descripcion"),
+  });
 
-  const handleSubmit = async ( values, {setSubmitting}) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
 
     const newTodo = {
       title: values.title,
@@ -61,13 +57,13 @@ export default function Page() {
           showConfirmButton: false,
           timer: 1500,
         });
-
-        setInputTitle("");
-        setInputDescription("");
       } else {
+        const errorData = await response.json();
+        setError(errorData.errors);
         console.error("Error al guardar el todo");
+        console.log(error);
       }
-    } finally{
+    } finally {
       setSubmitting(false);
     }
   };
@@ -79,7 +75,7 @@ export default function Page() {
       >
         <div className='bg-[url("/bg-mobile-light.jpg")] dark:bg-[url("/bg-mobile-dark.jpg")] xl:bg-[url("/bg-desktop-light.jpg")] xl:dark:bg-[url("/bg-desktop-dark.jpg")] bg-no-repeat bg-cover h-[200px] px-5 flex flex-col justify-evenly py-3 md:px-[31%] md:h-[260px] md:pt-16'>
           <Link href={"/"} className="text-white ml-[-30px] mb-6 ">
-            <span className="text-3xl">←</span> Volver
+            <span className="text-3xl">←</span> Back
           </Link>
           <div className=" flex justify-between items-baseline ml-1">
             <h1 className="text-white text-[26px] font-bold uppercase tracking-[10px] md:text-[34px] md:-mb-10">
@@ -110,7 +106,7 @@ export default function Page() {
                     placeholder="Title:"
                   />
                 </div>
-                  <ErrorMessage name="title" />
+                <ErrorMessage name="title" />
                 <div className="w-full bg-white h-12 rounded-sm flex items-center dark:bg-veryDarkDesaturatedBlue md:h-[58px] px-3 mt-6">
                   <Field
                     as="textarea"
@@ -119,15 +115,22 @@ export default function Page() {
                     placeholder="Description:"
                   />
                 </div>
-                  <ErrorMessage name="description" />
+                <ErrorMessage name="description" />
                 <div className="flex justify-end">
                   <button
                     type="submit"
                     className="flex justify-center bg-blue-500 dark:bg-white dark:text-black px-2 h-8 rounded-md text-white items-center cursor-pointer mt-2"
                     disabled={isSubmitting}
                   >
-                    Enviar
+                    Submit
                   </button>
+                </div>
+                <div>
+                  {Object.entries(error).map(([field, err]) => (
+                    <p key={field} className="text-red-600 mt-4">
+                      {err.message}
+                    </p>
+                  ))}
                 </div>
               </Form>
             )}
@@ -139,14 +142,17 @@ export default function Page() {
         className={`bg-veryLightGrayishBlue p-5 dark:bg-veryDarkBlue ${dark} dark:text-veryDarkGrayishBlueDark md:text-center`}
       >
         <div className="attribution text-xs dark:border-0">
-          Challenge by <p>Academia ForIT</p>. Coded by{" "}
-          <a href="https://www.linkedin.com/in/alejandro-elias-full-stack/">
-            Alejandro Elias
-          </a>
+          <p>Challenge by</p>
+          <p>Academia ForIT</p>
+          <p>
+            Coded by{" "}
+            <a href="https://www.linkedin.com/in/alejandro-elias-full-stack/">
+              Alejandro Elias
+            </a>
+          </p>
           .
         </div>
       </footer>
     </>
   );
 }
-
